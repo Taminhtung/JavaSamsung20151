@@ -1,3 +1,6 @@
+package Main;
+import java.beans.Encoder;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -7,18 +10,94 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.sound.sampled.AudioFormat.Encoding;
+import javax.swing.JOptionPane;
 
 public class SendEmail {
-	public static void main(String[] args) {
-		// Recipient's email ID needs to be mentioned.
-		String to = "nhbo93@gmail.com";
+	private  String to;
+	private  String from;
+	private  String username;
+	private  String password;
+	private  String subject; 
+	private  String body;
+	
+	
+	
+	public String getTo() {
+		return to;
+	}
 
-		// Sender's email ID needs to be mentioned
-		String from = "nhbo93@gmail.com";
-		final String username = "nhbo93@gmail.com";// change accordingly
-		final String password = "zobinnabcd";// change accordingly
 
-		// Assuming you are sending email through relay.jangosmtp.net
+
+	public void setTo(String to) {
+		this.to = to;
+	}
+
+
+
+	public String getFrom() {
+		return from;
+	}
+
+
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+
+
+	public String getUsername() {
+		return username;
+	}
+
+
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+
+
+	public String getPassword() {
+		return password;
+	}
+
+
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+
+
+	public String getSubject() {
+		return subject;
+	}
+
+
+
+	public void setSubject(String subject) {
+		
+		this.subject = subject;
+	}
+
+
+
+	public String getBody() {
+		return body;
+	}
+
+
+
+	public void setBody(String body) throws UnsupportedEncodingException {
+		this.body = body;
+	}
+
+
+
+	public  void send() throws UnsupportedEncodingException {
+		
 		String host = "smtp.gmail.com";
 
 		Properties props = new Properties();
@@ -47,19 +126,20 @@ public class SendEmail {
 					InternetAddress.parse(to));
 
 			// Set Subject: header field
-			message.setSubject("Testing Subject");
+		
+			message.setSubject(subject);
 
 			// Now set the actual message
-			message.setText("Hello, this is sample for to check send "
-					+ "email using JavaMailAPI ");
+		 
+			message.setText(body);
 
 			// Send message
 			Transport.send(message);
-
-			System.out.println("Sent message successfully....");
-
+			JOptionPane.showMessageDialog(null, "Success!");
 		} catch (MessagingException e) {
+			JOptionPane.showMessageDialog(null, "Error!");
 			throw new RuntimeException(e);
+			
 		}
 	}
 }

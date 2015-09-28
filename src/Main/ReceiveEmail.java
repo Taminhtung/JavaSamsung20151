@@ -1,3 +1,4 @@
+package Main;
 import java.util.Iterator;
 import java.util.Properties;
 import javax.mail.Address;
@@ -39,13 +40,14 @@ public class ReceiveEmail {
 
 			//
 			emailFolder.open(Folder.READ_ONLY);
+			int n=emailFolder.getMessageCount();
 			// emailFolder.
 			// Retrieve the messages from the folder object.
 			Message[] messages = emailFolder.getMessages();
 			System.out.println("Total Message" + messages.length);
 
 			// Iterate the messages
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i <messages.length; i++) {
 				Message message = messages[i];
 				// messages[i].
 				Address[] toAddress = message
@@ -56,6 +58,7 @@ public class ReceiveEmail {
 				System.out.println("From: " + message.getFolder());
 				System.out.println("Subject: " + message.getSubject());
 				System.out.println("From: " + message.getFrom()[0]);
+				System.out.println(message.getSentDate());
 
 				// Iterate recipients
 				System.out.println("To: ");
@@ -81,8 +84,8 @@ public class ReceiveEmail {
 	public static void main(String[] args) {
 		String pop3Host = "pop.gmail.com";// change accordingly
 		String mailStoreType = "pop3s";
-		final String userName = "nhbo93";// change accordingly
-		final String password = "zobinnabcd";// change accordingly
+		final String userName = "tungtm9358";// change accordingly
+		final String password = "100kglpcelovemu";// change accordingly
 
 		// call receiveEmail
 		receiveEmail(pop3Host, mailStoreType, userName, password);
