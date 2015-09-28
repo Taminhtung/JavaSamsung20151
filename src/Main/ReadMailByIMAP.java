@@ -12,18 +12,57 @@ import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
+import javax.swing.JOptionPane;
 
 public class ReadMailByIMAP {
-	public void processMessageBody(Message message) {
+	private String ursername;
+	private String password;
+	private Store store;
+	private Folder[] fld;
+	private Folder folder;
+	
+
+	public ReadMailByIMAP(String ursername, String password) {
+		super();
+		this.ursername = ursername;
+		this.password = password;
+	}
+
+	public String getUrsername() {
+		return ursername;
+	}
+
+
+
+	public void setUrsername(String ursername) {
+		this.ursername = ursername;
+	}
+
+
+
+	public String getPassword() {
+		return password;
+	}
+
+
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+
+
+	public String processMessageBody(Message message) {
+		String s="";
 		try {
 			Object content = message.getContent();
 			// check for string
 			// then check for multipart
 			if (content instanceof String) {
-				System.out.println(content);
+				 s+=(String) content;
 			} else if (content instanceof Multipart) {
 				Multipart multiPart = (Multipart) content;
-				procesMultiPart(multiPart);
+				s+=procesMultiPart(multiPart);
 			} else if (content instanceof InputStream) {
 				InputStream inStream = (InputStream) content;
 				int ch;
@@ -36,9 +75,11 @@ public class ReadMailByIMAP {
 		} catch (MessagingException e) {
 			e.printStackTrace();
 		}
+		return s;
 	}
 
-	public void procesMultiPart(Multipart content) {
+	public String procesMultiPart(Multipart content) {
+		String s="";
 		try {
 			int multiPartCount = content.getCount();
 //			for (int i = 0; i < multiPartCount; i++) {
@@ -46,9 +87,9 @@ public class ReadMailByIMAP {
 				Object o;
 				o = bodyPart.getContent();
 				if (o instanceof String) {
-					System.out.println(o);
+					s+= (String) o;
 				} else if (o instanceof Multipart) {
-					procesMultiPart((Multipart) o);
+					s+=procesMultiPart((Multipart) o);
 				}
 //			}
 		} catch (IOException e) {
@@ -56,46 +97,135 @@ public class ReadMailByIMAP {
 		} catch (MessagingException e) {
 			e.printStackTrace();
 		}
+		return s;
+	}
+	
+	public boolean connect(){
+		Properties props = new Properties();
+		props.setProperty("mail.store.protocol", "imaps");
+		try{
+			Session session = Session.getInstance(props, null);
+			store = session.getStore();
+			store.connect("imap.gmail.com", ursername, password);
+			JOptionPane.showMessageDialog(null, "Connected!");
+			fld = store.getFolder("[Gmail]").list();
+			folder = store.getFolder("Inbox");
+			return true;
+			
+		}catch(Exception e){
+			JOptionPane.showMessageDialog(null, "Error!");
+			return false;
+		}
 	}
 
-	public static void read(String username, String password) {
-		ReadMailByIMAP readMailByIMAP = new ReadMailByIMAP();
-		Properties props = new Properties();
-
-		props.setProperty("mail.store.protocol", "imaps");
-
+	
+	
+	public int gettotalEmail(int choice){
 		try {
-			Session session = Session.getInstance(props, null);
-			Store store = session.getStore();
-			store.connect("imap.gmail.com", "tungtm9358@gmail.com", "100kglpcelovemu");
-			Folder[] folderList = store.getFolder("[Gmail]").list();
-			for (int i = 0; i < folderList.length; i++) {
-				System.out.println(folderList[i].getFullName());
+			if(choice>=0)
+				folder = fld[choice];
+			return folder.getMessageCount();
+		} catch (MessagingException e) {
+		    return 0; 	
+		} 
+		
+	}
+	
+	public void openfolder(int choice){
+		
+		try {
+			if(choice>=0) 
+				folder = fld[choice];
+			folder.open(Folder.READ_ONLY);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public String getaddress(int choice, int n) {
+		String s="";
+		int t;
+		try {
+			if(choice>=0) 
+				folder = fld[choice];
+			t = folder.getMessageCount();
+			if(n>t) n=t;
+			else if(n<1) n=1;
+			Message msg= folder.getMessage(n);
+			Address[] in;
+			if(choice!=2)
+				in = msg.getFrom();
+			else in=msg.getReplyTo();
+			for (Address address : in) {
+					s+=address.toString();
 			}
-			Folder inbox = store.getFolder("inbox");
-			inbox.open(Folder.READ_ONLY);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}	
+		return s;
 			
-			int count = inbox.getMessageCount();
-			for(int i=0; i<=count; i++){
-				Message msg = inbox.getMessage(count-i);
-				Address[] in = msg.getFrom();
-				for (Address address : in) {
-					System.out.println("FROM:" + address.toString());
-				}
-				// Multipart mp = (Multipart) msg.getContent();
-				// BodyPart bp = mp.getBodyPart(0);
-				System.out.println("Bcc User NAme :"
-					+ InternetAddress.toString(msg
-							.getRecipients(Message.RecipientType.BCC)));
-				System.out.println("SENT DATE:" + msg.getSentDate());
-				System.out.println("SUBJECT:" + msg.getSubject());
-				System.out.println("CONTENT:");
-				readMailByIMAP.processMessageBody(msg);
-			}
-			store.close();
-		} catch (Exception mex) {
-			mex.printStackTrace();
-
+	}
+	
+	public String getbcc(int choice, int n) {
+		String s="";
+		int t;
+		try {
+			if(choice>=0) 
+				folder = fld[choice];
+			t = folder.getMessageCount();
+			if(n>t) n=t;
+			else if(n<1) n=1;
+			Message msg= folder.getMessage(n);
+			s+=InternetAddress.toString(msg.getRecipients(Message.RecipientType.BCC));
+		}catch (Exception e) {
+			e.printStackTrace();
+		}	
+		return s;
+	}
+	
+	public String getSenddate(int choice, int n) {
+		String s="";
+		int t;
+		try {
+			if(choice>=0) 
+				folder = fld[choice];
+			t = folder.getMessageCount();
+			if(n>t) n=t;
+			else if(n<1) n=1;
+			Message msg= folder.getMessage(n);
+			s+=msg.getSentDate();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}	
+		return s;
+	}
+	
+	public String getContent(int choice, int n) {
+		String s="";
+		int t;
+		try {
+			if(choice>=0) 
+				folder = fld[choice];
+			t = folder.getMessageCount();
+			if(n>t) n=t;
+			else if(n<1) n=1;
+			Message msg= folder.getMessage(n);
+			s+=processMessageBody(msg);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}	
+		return s;
+	}
+	
+	public void closefoder(int choice){
+		
+		try {
+			if(choice>=0) 
+				folder = fld[choice];
+			folder.close(true);
+		} catch (MessagingException e) {
+			e.printStackTrace();
 		}
 	}
 }

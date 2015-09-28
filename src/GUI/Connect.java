@@ -3,13 +3,14 @@ package GUI;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.*;
 
-
 import Main.ReadMailByIMAP;
 
-public class Connect extends javax.swing.JFrame {
+public class Connect extends javax.swing.JFrame implements WindowListener {
 	JLabel wel;
 	JLabel lbuser;
 	JLabel lbpass;
@@ -72,7 +73,8 @@ public class Connect extends javax.swing.JFrame {
 		SymAction lSymAction = new SymAction();
 		con.addActionListener(lSymAction);
 		clear.addActionListener(lSymAction);
-	//	    back.addActionListener(lSymAction);   
+	    back.addActionListener(lSymAction);   
+	    addWindowListener(this);
 		}
 	
 	 class SymAction implements java.awt.event.ActionListener {
@@ -83,24 +85,71 @@ public class Connect extends javax.swing.JFrame {
 			        Connect_actionPerformed(event);
 			      else if (object == clear)
 			      	Clear_actionPerformed(event);
-			      else if (object == back);
-			     //   Back_actionPerformed(event);        
+			      else if (object == back)
+			    	  Back_actionPerformed(event);        
 				
 			}
-	 private void Clear_actionPerformed(ActionEvent event) {
+	 private void Back_actionPerformed(ActionEvent event) {
+				setVisible(false);
+				(new MailClient()).show();
+			}
+	private void Clear_actionPerformed(ActionEvent event) {
 		 	user.setText("");
 		 	pass.setText("");
 				
 			}
 	private void Connect_actionPerformed(ActionEvent event) {
-			 setVisible(false);
- 			(new ReadMail()).show();
+		    String urs =user.getText();
+		    String pwd = pass.getText();
+		    ReadMailByIMAP rmbimap= new ReadMailByIMAP(urs, pwd);
+		    if(rmbimap.connect()){
+		    	setVisible(false);
+		    	(new ReadMail(rmbimap)).show();
+ 			}
 				
 			}
 	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		System.exit(0);
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 	
-	public static void main(String args[]) {
-		    (new Connect()).show(); 
-		  
-		  }
 }

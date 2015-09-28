@@ -2,6 +2,8 @@ package GUI;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.*;
 
@@ -10,7 +12,7 @@ import Main.SendEmail;
 
 
 
-public class ComposeMail extends javax.swing.JFrame{
+public class ComposeMail extends javax.swing.JFrame implements WindowListener{
 	
 	
 	JLabel JLabel1 = new JLabel();
@@ -93,7 +95,8 @@ public class ComposeMail extends javax.swing.JFrame{
 		    SymAction lSymAction = new SymAction();
 		    Send.addActionListener(lSymAction);
 		    Clear.addActionListener(lSymAction);
-	//	    Back.addActionListener(lSymAction);    
+		    Back.addActionListener(lSymAction);   
+		    addWindowListener(this);
 		  }
 	 
 	 class SymAction implements java.awt.event.ActionListener {
@@ -104,11 +107,15 @@ public class ComposeMail extends javax.swing.JFrame{
 		        Send_actionPerformed(event);
 		      else if (object == Clear)
 		      	Clear_actionPerformed(event);
-		      else if (object == Back);
-		     //   Back_actionPerformed(event);        
+		      else if (object == Back)
+		      	Back_actionPerformed(event);        
 			
 		}
-		void Send_actionPerformed(java.awt.event.ActionEvent event) {
+		private void Back_actionPerformed(ActionEvent event) {
+			setVisible(false);
+			(new MailClient()).show();
+		}
+		void Send_actionPerformed(ActionEvent event) {
 		    try {
 
 		     SendEmail se= new SendEmail();
@@ -125,7 +132,6 @@ public class ComposeMail extends javax.swing.JFrame{
 		     se.setBody(body);
 		     se.send();
 		     
-         
 
 		    } catch (Exception e) {
 		      
@@ -133,7 +139,7 @@ public class ComposeMail extends javax.swing.JFrame{
 
 		  }
 		
-		void Clear_actionPerformed(java.awt.event.ActionEvent event) {
+		void Clear_actionPerformed(ActionEvent event) {
 			  _from.setText("");
 			  _to.setText("");
 			  _pwd.setText("");
@@ -141,8 +147,47 @@ public class ComposeMail extends javax.swing.JFrame{
 			  _body.setText("");
 			  }
 	 }
-	  public static void main(String args[]) {
-		    (new ComposeMail()).show(); 
-		  
-		  }
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		System.exit(0);
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	  
 }
