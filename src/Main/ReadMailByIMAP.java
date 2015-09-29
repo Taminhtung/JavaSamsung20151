@@ -67,13 +67,13 @@ public class ReadMailByIMAP {
 				InputStream inStream = (InputStream) content;
 				int ch;
 				while ((ch = inStream.read()) != -1) {
-					System.out.write(ch);
+					s+=ch;
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
 		}
 		return s;
 	}
@@ -81,7 +81,7 @@ public class ReadMailByIMAP {
 	public String procesMultiPart(Multipart content) {
 		String s="";
 		try {
-			int multiPartCount = content.getCount();
+//			int multiPartCount = content.getCount();
 //			for (int i = 0; i < multiPartCount; i++) {
 				BodyPart bodyPart = content.getBodyPart(0);
 				Object o;
@@ -93,9 +93,9 @@ public class ReadMailByIMAP {
 				}
 //			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
 		}
 		return s;
 	}
@@ -113,7 +113,8 @@ public class ReadMailByIMAP {
 			return true;
 			
 		}catch(Exception e){
-			JOptionPane.showMessageDialog(null, "Error!");
+			JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
+			
 			return false;
 		}
 	}
@@ -126,6 +127,7 @@ public class ReadMailByIMAP {
 				folder = fld[choice];
 			return folder.getMessageCount();
 		} catch (MessagingException e) {
+			JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
 		    return 0; 	
 		} 
 		
@@ -138,83 +140,90 @@ public class ReadMailByIMAP {
 				folder = fld[choice];
 			folder.open(Folder.READ_ONLY);
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
 		}
 	}
 	
 	
-	public String getaddress(int choice, int n) {
+	public String getfrom(int choice, int n) throws Exception {
 		String s="";
 		int t;
-		try {
-			if(choice>=0) 
-				folder = fld[choice];
-			t = folder.getMessageCount();
-			if(n>t) n=t;
-			else if(n<1) n=1;
-			Message msg= folder.getMessage(n);
-			Address[] in;
-			if(choice!=2)
-				in = msg.getFrom();
-			else in=msg.getReplyTo();
-			for (Address address : in) {
-					s+=address.toString();
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-		}	
+		if(choice>=0) 
+			folder = fld[choice];
+		t = folder.getMessageCount();
+		if(n>t) n=t;
+		else if(n<1) n=1;
+		Message msg= folder.getMessage(n);
+		Address[] in;
+		in = msg.getFrom();
+		for (Address address : in) 
+			s+=address.toString();
 		return s;
 			
 	}
 	
-	public String getbcc(int choice, int n) {
+	public String getto(int choice, int n) throws Exception {
 		String s="";
 		int t;
-		try {
-			if(choice>=0) 
-				folder = fld[choice];
-			t = folder.getMessageCount();
-			if(n>t) n=t;
-			else if(n<1) n=1;
-			Message msg= folder.getMessage(n);
-			s+=InternetAddress.toString(msg.getRecipients(Message.RecipientType.BCC));
-		}catch (Exception e) {
-			e.printStackTrace();
-		}	
+		if(choice>=0) 
+			folder = fld[choice];
+		t = folder.getMessageCount();
+		if(n>t) n=t;
+		else if(n<1) n=1;
+		Message msg= folder.getMessage(n);
+		s+=InternetAddress.toString(msg.getRecipients(Message.RecipientType.TO));
+		return s;
+			
+	}
+	
+	public String getbcc(int choice, int n) throws Exception {
+		String s="";
+		int t;
+		if(choice>=0) 
+			folder = fld[choice];
+		t = folder.getMessageCount();
+		if(n>t) n=t;
+		else if(n<1) n=1;
+		Message msg= folder.getMessage(n);
+		s+=InternetAddress.toString(msg.getRecipients(Message.RecipientType.BCC));
 		return s;
 	}
 	
-	public String getSenddate(int choice, int n) {
+	public String getsubject(int choice, int n) throws Exception {
 		String s="";
 		int t;
-		try {
-			if(choice>=0) 
-				folder = fld[choice];
-			t = folder.getMessageCount();
-			if(n>t) n=t;
-			else if(n<1) n=1;
-			Message msg= folder.getMessage(n);
-			s+=msg.getSentDate();
-		}catch (Exception e) {
-			e.printStackTrace();
-		}	
+		if(choice>=0) 
+			folder = fld[choice];
+		t = folder.getMessageCount();
+		if(n>t) n=t;
+		else if(n<1) n=1;
+		Message msg= folder.getMessage(n);
+		s+=msg.getSubject();
+		return s;
+	}
+	public String getSenddate(int choice, int n) throws Exception {
+		String s="";
+		int t;
+		if(choice>=0) 
+			folder = fld[choice];
+		t = folder.getMessageCount();
+		if(n>t) n=t;
+		else if(n<1) n=1;
+		Message msg= folder.getMessage(n);
+		s+=msg.getSentDate();
 		return s;
 	}
 	
-	public String getContent(int choice, int n) {
+	public String getContent(int choice, int n) throws Exception{
 		String s="";
 		int t;
-		try {
-			if(choice>=0) 
-				folder = fld[choice];
-			t = folder.getMessageCount();
-			if(n>t) n=t;
-			else if(n<1) n=1;
-			Message msg= folder.getMessage(n);
-			s+=processMessageBody(msg);
-		}catch (Exception e) {
-			e.printStackTrace();
-		}	
+		if(choice>=0) 
+			folder = fld[choice];
+		t = folder.getMessageCount();
+		if(n>t) n=t;
+		else if(n<1) n=1;
+		Message msg= folder.getMessage(n);
+		s+=processMessageBody(msg);
 		return s;
 	}
 	
@@ -223,9 +232,20 @@ public class ReadMailByIMAP {
 		try {
 			if(choice>=0) 
 				folder = fld[choice];
-			folder.close(true);
+			if(folder.isOpen())
+				folder.close(true);
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
+		}
+	}
+	
+	public void close(){
+		try {
+			if(store.isConnected())
+				store.close();
+		} catch (MessagingException e) {
+			
+			JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
 		}
 	}
 }

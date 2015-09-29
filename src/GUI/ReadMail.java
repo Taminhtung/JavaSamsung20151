@@ -2,8 +2,11 @@ package GUI;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.*;
 
@@ -23,6 +26,10 @@ public class ReadMail extends javax.swing.JFrame implements WindowListener {
 	JTextField noEmail;
 	JLabel lbFrom;
 	JTextField from;
+	JLabel lbTo;
+	JTextField to;
+	JLabel lbsubject;
+	JTextField subject;
 	JLabel lbBCC;
 	JTextField bcc;
 	JLabel lbSenddate;
@@ -39,7 +46,7 @@ public class ReadMail extends javax.swing.JFrame implements WindowListener {
 		setLayout(null);
 		setResizable(false);
 		setBackground(Color.lightGray);
-		setSize(690,650);
+		setSize(690,680);
 		setVisible(true);
 		
 		wel=new JLabel("Read email");
@@ -70,30 +77,42 @@ public class ReadMail extends javax.swing.JFrame implements WindowListener {
 		noEmail.setBounds(200,115,70,20);
 		noEmail.setEditable(false);
 		
-		lbFrom=new JLabel("From/To    :");
+		lbFrom=new JLabel("From    :");
 		lbFrom.setBounds(25,145,80,20);
 		from=new JTextField(100);
 		from.setBounds(200,145,300,20);
 		from.setEditable(false);
 		
+		lbTo=new JLabel("To       :");
+		lbTo.setBounds(25,175,80,20);
+		to=new JTextField(100);
+		to.setBounds(200,175,300,20);
+		to.setEditable(false);
+		
 		lbBCC=new JLabel("BCC    :");
-		lbBCC.setBounds(25,175,80,20);
+		lbBCC.setBounds(25,205,80,20);
 		bcc=new JTextField(100);
-		bcc.setBounds(200,175,300,20);
+		bcc.setBounds(200,205,300,20);
 		bcc.setEditable(false);
 		
+		lbsubject=new JLabel("Subject    :");
+		lbsubject.setBounds(25,235,80,20);
+		subject=new JTextField(100);
+		subject.setBounds(200,235,300,20);
+		subject.setEditable(false);
+		
 		lbSenddate=new JLabel("Send Date    :");
-		lbSenddate.setBounds(25,205,80,20);
+		lbSenddate.setBounds(25,265,80,20);
 		senddate=new JTextField(100);
-		senddate.setBounds(200,205,300,20);
+		senddate.setBounds(200,265,300,20);
 		senddate.setEditable(false);
 		
 		lbContent=new JLabel("Content    :");
-		lbContent.setBounds(25,235,80,20);
+		lbContent.setBounds(25,295,80,20);
 		
 		scrollPane = new JScrollPane();
 		content = new JTextArea();
-		scrollPane.setBounds(25, 265, 630, 280);
+		scrollPane.setBounds(25, 325, 630, 250);
 	    scrollPane.getViewport().add(content);
 	    content.setBounds(0, 0, 300, 100);
 	    content.setEditable(false);
@@ -101,22 +120,22 @@ public class ReadMail extends javax.swing.JFrame implements WindowListener {
 	    read=new JButton("Read");
 		read.setBackground(Color.darkGray);
 		read.setForeground(Color.white);
-		read.setBounds(45,570,120,30);
+		read.setBounds(45,600,120,30);
 		
 		prev=new JButton("Prev");
 		prev.setBackground(Color.darkGray);
 		prev.setForeground(Color.white);
-		prev.setBounds(200,570,120,30);
+		prev.setBounds(200,600,120,30);
 		
 		next=new JButton("Next");
 		next.setBackground(Color.darkGray);
 		next.setForeground(Color.white);
-		next.setBounds(355,570,120,30);
+		next.setBounds(355,600,120,30);
 		
 		back=new JButton("Back");
 		back.setBackground(Color.darkGray);
 		back.setForeground(Color.white);
-		back.setBounds(510,570,120,30);
+		back.setBounds(510,600,120,30);
 		
 		prev.setEnabled(false);
 	    next.setEnabled(false);
@@ -130,8 +149,12 @@ public class ReadMail extends javax.swing.JFrame implements WindowListener {
 		add(noEmail);
 		add(lbFrom);
 		add(from);
+		add(lbTo);
+		add(to);
 		add(lbBCC);
 		add(bcc);
+		add(lbsubject);
+		add(subject);
 		add(lbSenddate);
 		add(senddate);
 		add(lbContent);
@@ -149,10 +172,29 @@ public class ReadMail extends javax.swing.JFrame implements WindowListener {
 		
 		this.rm=rm;
 		addWindowListener(this);
+		cbb.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				totalEmail.setText("");
+				init(1);
+				prev.setEnabled(false);
+			    next.setEnabled(false);
+			}
+		});
+		
+	}
+	
+	public void init(int n){
+		noEmail.setText(""+n);
+	    from.setText("");
+	    to.setText("");
+	    bcc.setText("");
+	    subject.setText("");
+	    content.setText("");
+	    senddate.setText("");
 	}
 	
 	class SymAction implements java.awt.event.ActionListener {
-
+         
 		public void actionPerformed(ActionEvent event) {
 			 Object object = event.getSource();
 		      if (object == read)
@@ -167,6 +209,7 @@ public class ReadMail extends javax.swing.JFrame implements WindowListener {
 		}
 
 		private void Back_actionPerformed(ActionEvent event) {
+			rm.close();
 			setVisible(false);
 			(new Connect()).show();
 			
@@ -176,7 +219,7 @@ public class ReadMail extends javax.swing.JFrame implements WindowListener {
 				int n= Integer.parseInt(noEmail.getText());
 				n=n+1;
 				if(n>total || n<1) n=1;
-				noEmail.setText(""+n);
+				init(n);
 			
 		}
 
@@ -184,15 +227,10 @@ public class ReadMail extends javax.swing.JFrame implements WindowListener {
 				int n= Integer.parseInt(noEmail.getText());
 				n=n-1;
 				if(n<1 || n>total) n=total; 
-	
-				noEmail.setText(""+n);
-			
-			
+				init(n);		
 		}
 
 		private void Read_actionPerformed(ActionEvent event) {
-			    prev.setEnabled(false);
-			    next.setEnabled(false);
 				int choice;
 				int n;
 				switch(cbb.getSelectedIndex()){
@@ -207,10 +245,16 @@ public class ReadMail extends javax.swing.JFrame implements WindowListener {
 				totalEmail.setText(""+total);
 				rm.openfolder(choice);
 				n= Integer.parseInt(noEmail.getText());
-				from.setText(rm.getaddress(choice, n));
-				bcc.setText(rm.getbcc(choice, n));
-				senddate.setText(rm.getSenddate(choice, n));
-				content.setText(rm.getContent(choice, n));
+				try{
+					from.setText(rm.getfrom(choice, n));
+					to.setText(rm.getto(choice, n));
+					bcc.setText(rm.getbcc(choice, n));
+					subject.setText(rm.getsubject(choice, n));
+					senddate.setText(rm.getSenddate(choice, n));
+					content.setText(rm.getContent(choice, n));
+				}catch(Exception e){
+					JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
+				}
 				rm.closefoder(choice);
 				prev.setEnabled(true);
 			    next.setEnabled(true);

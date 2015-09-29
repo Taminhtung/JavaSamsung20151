@@ -1,16 +1,13 @@
 package Main;
-import java.beans.Encoder;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.sound.sampled.AudioFormat.Encoding;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.*;
+import javax.mail.internet.*;
 import javax.swing.JOptionPane;
 
 public class SendEmail {
@@ -20,7 +17,7 @@ public class SendEmail {
 	private  String password;
 	private  String subject; 
 	private  String body;
-	
+	private  String path;
 	
 	
 	public String getTo() {
@@ -96,7 +93,7 @@ public class SendEmail {
 
 
 
-	public  void send() throws UnsupportedEncodingException {
+	public  void send(boolean check) throws UnsupportedEncodingException {
 		
 		String host = "smtp.gmail.com";
 
@@ -132,14 +129,42 @@ public class SendEmail {
 			// Now set the actual message
 		 
 			message.setText(body);
+			
+			
+			//send message with attachment
+			if(check){
+				BodyPart messageBodyPart = new MimeBodyPart();
+				messageBodyPart.setText(body);
+				Multipart multipart = new MimeMultipart();
+				multipart.addBodyPart(messageBodyPart);
+				messageBodyPart = new MimeBodyPart();
+				String filename = path;
+				DataSource source = new FileDataSource(filename);
+				messageBodyPart.setDataHandler(new DataHandler(source));
+				messageBodyPart.setFileName(filename);
+				multipart.addBodyPart(messageBodyPart);
+				message.setContent(multipart);
+	         }
 
 			// Send message
 			Transport.send(message);
 			JOptionPane.showMessageDialog(null, "Success!");
 		} catch (MessagingException e) {
-			JOptionPane.showMessageDialog(null, "Error!");
+			JOptionPane.showMessageDialog(null, "Error!"+e.getMessage());
 			throw new RuntimeException(e);
 			
 		}
+	}
+
+
+
+	public String getPath() {
+		return path;
+	}
+
+
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }
