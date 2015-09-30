@@ -63,6 +63,7 @@ public class ReadMailByIMAP {
 			} else if (content instanceof Multipart) {
 				Multipart multiPart = (Multipart) content;
 				s+=procesMultiPart(multiPart);
+				 
 			} else if (content instanceof InputStream) {
 				InputStream inStream = (InputStream) content;
 				int ch;

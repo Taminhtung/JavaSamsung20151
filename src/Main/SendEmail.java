@@ -143,6 +143,7 @@ public class SendEmail {
 				messageBodyPart.setDataHandler(new DataHandler(source));
 				messageBodyPart.setFileName(filename);
 				multipart.addBodyPart(messageBodyPart);
+		       
 				message.setContent(multipart);
 	         }
 
